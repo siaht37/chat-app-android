@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="10">
+
+    <CheckBox
+        android:id="@+id/checkBoxUser"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgAvatarUser"
+        android:layout_weight="3"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="0dp"
+        android:layout_height="100dp"/>
+
+    <TextView
+        android:text="293874757"
+        android:layout_gravity="center"
+        android:layout_weight="7"
+        android:id="@+id/txtFullName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

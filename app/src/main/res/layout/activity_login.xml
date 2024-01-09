@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/one"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -58,7 +58,7 @@
         android:layout_height="30dp"
         android:fontFamily="@font/poppins_bold"
         android:gravity="center_vertical"
-        android:text="EMAIL"
+        android:text="Username"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         android:textStyle="bold"
@@ -75,7 +75,7 @@
         android:layout_height="35dp"
         android:fontFamily="@font/poppins_bold"
         android:gravity="center_vertical"
-        android:text="PASSWORD"
+        android:text="Password"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         android:textStyle="bold"
@@ -87,7 +87,7 @@
         app:layout_constraintVertical_bias="0.725" />
 
     <EditText
-        android:id="@+id/editTexLogEmail"
+        android:id="@+id/edtUsername"
         android:layout_width="@dimen/_260sdp"
         android:layout_height="@dimen/_52sdp"
         android:ems="10"
@@ -104,7 +104,7 @@
         app:layout_constraintVertical_bias="0.649" />
 
     <EditText
-        android:id="@+id/editTextLogPassword"
+        android:id="@+id/edtPassword"
         android:layout_width="@dimen/_260sdp"
         android:layout_height="@dimen/_52sdp"
         android:ems="10"
@@ -121,11 +121,12 @@
         app:layout_constraintVertical_bias="0.813" />
 
     <Button
-        android:id="@+id/logbutton"
+        android:id="@+id/btnLogin"
         android:layout_width="@dimen/_250sdp"
         android:layout_height="@dimen/_45sdp"
         android:backgroundTint="@color/black"
         android:text="Login"
+        android:textColor="@color/white"
         android:textSize="@dimen/_20sdp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
