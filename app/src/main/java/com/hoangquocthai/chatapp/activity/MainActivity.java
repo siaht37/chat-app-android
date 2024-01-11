@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView imgGroupAdd;
     private List<GroupChat> groupChatList;
+    private ImageView logoutimg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,13 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, CreateGroupActivity.class);
                 startActivity(intent);
             }
+        });
+
+        logoutimg.setOnClickListener((view)->{
+            Server.user = null;
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
@@ -92,5 +100,6 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setHasFixedSize(true);
+        logoutimg = findViewById(R.id.logoutimg);
     }
 }

@@ -51,7 +51,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewListMessage;
     private CardView imgSendMessage;
-    private List<Message> messageList;
     private LinearLayoutManager linearLayoutManager;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ApiChat apiChat;
@@ -75,8 +74,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        createWebSocketClient();
         initialView();
+        createWebSocketClient();
 
         Intent intent = getIntent();
 
@@ -249,7 +248,6 @@ public class ChatActivity extends AppCompatActivity {
         edtMessage = findViewById(R.id.edtMessage);
 
         apiChat = RetrofitClient.getInstance(Server.BASE_URL).create(ApiChat.class);
-        messageList = new ArrayList<>();
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
         recyclerViewListMessage.setLayoutManager(linearLayoutManager);
@@ -270,9 +268,10 @@ public class ChatActivity extends AppCompatActivity {
                             .subscribe(
                                     messages -> {
                                         if (messages != null) {
-                                            messageList = messages;
                                             messageAdapter = new MessageAdapter(getApplicationContext(), messages);
                                             recyclerViewListMessage.setAdapter(messageAdapter);
+                                            int lastPosition = messageAdapter.getItemCount() - 1;
+                                            recyclerViewListMessage.smoothScrollToPosition(lastPosition);
                                         }
                                     },
                                     throwable -> {
