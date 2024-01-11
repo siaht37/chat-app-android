@@ -114,12 +114,7 @@ public class ChatActivity extends AppCompatActivity {
                 message.setCreatedAt(new Date());
                 message.setSender(Server.user);
 
-                MessageDTO messageDTO = new MessageDTO();
-                messageDTO.setMessage(message);
-                messageDTO.setUser(Server.user);
-
-                webSocketClient.send(g.toJson(messageDTO));
-                getData(groupChat.getGroupId());
+                webSocketClient.send(g.toJson(message));
                 edtMessage.setText("");
                 publishMessage(msg);
             }
@@ -148,8 +143,13 @@ public class ChatActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        getData(groupChat.getGroupId());
-
+                        //getData(groupChat.getGroupId());
+/*
+                        Message messageData = g.fromJson(message, Message.class);
+                        messageList.add(messageData);
+                        messageAdapter = new MessageAdapter(getApplicationContext(), messageList);
+                        recyclerViewListMessage.setAdapter(messageAdapter);
+*/
                     }
                 });
             }
@@ -205,15 +205,13 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void message(PubNub pub, final PNMessageResult message) {
-                final String msg = message.getMessage().toString().replace("\"", "");
+//                final String msg = message.getMessage().toString().replace("\"", "");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             getData(groupChat.getGroupId());
                         } catch (Exception e) {
-                            System.out.println("Error");
-                            e.printStackTrace();
                         }
                     }
                 });
@@ -231,16 +229,13 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void publishMessage(String animal_sound){
-        // Publish message to the global chanel
         pubnub.publish()
                 .message(animal_sound)
                 .channel("global_channel")
                 .async(new PNCallback<PNPublishResult>() {
                     @Override
                     public void onResponse(PNPublishResult result, PNStatus status) {
-                        if(status.isError()) {
-                            getData(groupChat.getGroupId());
-                        }
+                        getData(groupChat.getGroupId());
                     }
                 });
     }
@@ -264,20 +259,30 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void getData(Long groupId) {
-        compositeDisposable.add(apiChat.getAllMessageByGroup(groupId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        messages -> {
-                            if (messages != null) {
-                                messageList = messages;
-                                messageAdapter = new MessageAdapter(this, messages);
-                                recyclerViewListMessage.setAdapter(messageAdapter);
-                            }
-                        },
-                        throwable -> {
-                            Toast.makeText(getApplicationContext(), "Không kết nối được với server: ", Toast.LENGTH_SHORT).show();
-                        }
-                ));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    compositeDisposable.add(apiChat.getAllMessageByGroup(groupId)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    messages -> {
+                                        if (messages != null) {
+                                            messageList = messages;
+                                            messageAdapter = new MessageAdapter(getApplicationContext(), messages);
+                                            recyclerViewListMessage.setAdapter(messageAdapter);
+                                        }
+                                    },
+                                    throwable -> {
+                                        Toast.makeText(getApplicationContext(), "Không kết nối được với server: ", Toast.LENGTH_SHORT).show();
+                                    }
+                            ));
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 }
