@@ -51,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewListMessage;
     private CardView imgSendMessage;
-    private List<MessageDTO> messageList;
+    private List<Message> messageList;
     private LinearLayoutManager linearLayoutManager;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ApiChat apiChat;
@@ -271,7 +271,7 @@ public class ChatActivity extends AppCompatActivity {
                         messages -> {
                             if (messages != null) {
                                 messageList = messages;
-                                messageAdapter = new MessageAdapter(this, messageList);
+                                messageAdapter = new MessageAdapter(this, messages);
                                 recyclerViewListMessage.setAdapter(messageAdapter);
                             }
                         },

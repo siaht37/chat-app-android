@@ -19,11 +19,11 @@ import com.hoangquocthai.chatapp.retrofit.Server;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private List<MessageDTO> messageList;
+    private List<Message> messageList;
 
     private Context context;
 
-    public MessageAdapter(Context context, List<MessageDTO> messages){
+    public MessageAdapter(Context context, List<Message> messages){
         this.context = context;
         this.messageList = messages;
     }
@@ -39,14 +39,14 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final MessageAdapter.MyViewHoder myViewHoder = (MessageAdapter.MyViewHoder) holder;
-        MessageDTO message = messageList.get(position);
+        Message message = messageList.get(position);
 
-        if(message.getUser().getUsername().equals(Server.user.getUsername())){
+        if(!message.getSender().getUsername().equals(Server.user.getUsername())){
             myViewHoder.parentMessageItem.setGravity(RelativeLayout.ALIGN_RIGHT);
         }else{
             myViewHoder.parentMessageItem.setGravity(RelativeLayout.ALIGN_LEFT);
         }
-        myViewHoder.message.setText(message.getMessage().getContent());
+        myViewHoder.message.setText(message.getContent());
     }
 
     @Override

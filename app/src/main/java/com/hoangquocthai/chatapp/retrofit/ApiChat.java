@@ -32,7 +32,7 @@ public interface ApiChat {
 
     @POST(Server.prefixGetAllMessage)
     @FormUrlEncoded
-    Observable<List<MessageDTO>> getAllMessageByGroup(@Field("groupId") Long groupId);
+    Observable<List<Message>> getAllMessageByGroup(@Field("groupId") Long groupId);
 
     @POST(Server.prefixGetGroupById)
     @FormUrlEncoded
