@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation("com.pubnub:pubnub-gson:4.25.0")
 
     implementation("com.github.bumptech.glide:glide:3.7.0")
     implementation("androidx.navigation:navigation-fragment:2.3.5")

@@ -3,6 +3,7 @@ package com.hoangquocthai.chatapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     private ApiChat apiChat;
     private UsersAdapter friendAdapter;
     private LinearLayoutManager linearLayoutManager;
+    private EditText edtGroupRoomName;
 
 
     @Override
@@ -77,7 +79,8 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     private void handleCreateGroup() {
         btnCreateGroup.setOnClickListener((view)->{
-            if(userSelected.size() == 0){
+            String roomName = edtGroupRoomName.getText().toString();
+            if(userSelected.size() == 0 || roomName.length() == 0){
                 return;
             }
             GroupChatRequestDto groupChatRequestDto = new GroupChatRequestDto();
@@ -87,7 +90,9 @@ public class CreateGroupActivity extends AppCompatActivity {
             for (User s : userSelected){
                 strings.add(s.getUsername());
             }
+            strings.add(Server.user.getUsername());
             groupChatRequestDto.setUsers(strings);
+            groupChatRequestDto.setRoomName(roomName);
 
             compositeDisposable.add(apiChat.createGroup(groupChatRequestDto)
                     .subscribeOn(Schedulers.io())
@@ -117,6 +122,6 @@ public class CreateGroupActivity extends AppCompatActivity {
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
         recyclerViewCreateGroup.setLayoutManager(linearLayoutManager);
         recyclerViewCreateGroup.setHasFixedSize(true);
-
+        edtGroupRoomName = findViewById(R.id.edtGroupRoomName);
     }
 }

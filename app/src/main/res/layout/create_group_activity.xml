@@ -7,7 +7,13 @@
     android:orientation="vertical"
     tools:context=".activity.CreateGroupActivity">
 
+    <EditText
+        android:id="@+id/edtGroupRoomName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@+id/edtGroupRoomName"
         android:layout_above="@id/btnCreateGroup"
         android:id="@+id/recyclerViewCreateGroup"
         android:layout_width="match_parent"

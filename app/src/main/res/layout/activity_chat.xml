@@ -49,7 +49,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/sendbtnn"
+            android:id="@+id/imgSendMessage"
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_5sdp"
@@ -58,7 +58,6 @@
             app:cardCornerRadius="@dimen/_25sdp">
 
             <ImageView
-                android:id="@+id/imgSendMessage"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:layout_gravity="center"

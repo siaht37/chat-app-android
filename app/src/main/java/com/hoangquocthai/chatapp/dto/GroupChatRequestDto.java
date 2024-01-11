@@ -7,13 +7,15 @@ import java.util.List;
 public class GroupChatRequestDto {
     private String username;
     private List<String> users;
+    private String roomName;
 
     public GroupChatRequestDto(){
     }
 
-    public GroupChatRequestDto(String username, List<String> users) {
+    public GroupChatRequestDto(String username, List<String> users, String roomName) {
         this.username = username;
         this.users = users;
+        this.roomName = roomName;
     }
 
     public String getUsername() {
@@ -30,5 +32,13 @@ public class GroupChatRequestDto {
 
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 }

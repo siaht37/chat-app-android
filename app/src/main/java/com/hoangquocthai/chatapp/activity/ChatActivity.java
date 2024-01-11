@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ import com.hoangquocthai.chatapp.activity.CreateGroupActivity;
 import com.hoangquocthai.chatapp.adapter.MessageAdapter;
 import com.hoangquocthai.chatapp.dto.GroupChat;
 import com.hoangquocthai.chatapp.dto.GroupChatRequestDto;
+import com.hoangquocthai.chatapp.dto.MessageDTO;
 import com.hoangquocthai.chatapp.object.Message;
 import com.hoangquocthai.chatapp.object.User;
 import com.hoangquocthai.chatapp.retrofit.ApiChat;
@@ -26,6 +28,7 @@ import com.hoangquocthai.chatapp.retrofit.Server;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -34,11 +37,21 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import tech.gusavila92.websocketclient.WebSocketClient;
 
+
+import com.pubnub.api.PNConfiguration;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.models.consumer.PNPublishResult;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+
 public class ChatActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewListMessage;
-    private ImageView imgSendMessage;
-    private List<Message> messageList;
+    private CardView imgSendMessage;
+    private List<MessageDTO> messageList;
     private LinearLayoutManager linearLayoutManager;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private ApiChat apiChat;
@@ -47,6 +60,15 @@ public class ChatActivity extends AppCompatActivity {
     private WebSocketClient webSocketClient;
     private Gson g;
     private GroupChat groupChat;
+    private PubNub pubnub;
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        webSocketClient.close();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +76,13 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         createWebSocketClient();
+        initialView();
 
         Intent intent = getIntent();
 
         Long groupId = intent.getLongExtra("groupChat",-1);
-        initialView();
+
+        getData(groupId);
 
         compositeDisposable.add(apiChat.getGroupById(groupId)
                 .subscribeOn(Schedulers.io())
@@ -68,7 +92,6 @@ public class ChatActivity extends AppCompatActivity {
                             if (group != null) {
                                 groupChat = group;
                                 getData(groupId);
-                                handleClickSendMessage();
                             }
                         },
                         throwable -> {
@@ -76,23 +99,29 @@ public class ChatActivity extends AppCompatActivity {
                         }
                 ));
 
+
+        handleClickSendMessage();
     }
 
     private void handleClickSendMessage() {
-
         imgSendMessage.setOnClickListener((v -> {
-            if(!edtMessage.getText().toString().isEmpty()){
+            String msg = edtMessage.getText().toString();
+            if(!msg.isEmpty()){
                 Message message = new Message();
-                message.setContent(edtMessage.getText().toString());
+                message.setContent(msg);
                 message.setIdMessage(null);
                 message.setGroupChat(groupChat);
                 message.setCreatedAt(new Date());
                 message.setSender(Server.user);
 
-                webSocketClient.send(g.toJson(message));
+                MessageDTO messageDTO = new MessageDTO();
+                messageDTO.setMessage(message);
+                messageDTO.setUser(Server.user);
+
+                webSocketClient.send(g.toJson(messageDTO));
                 getData(groupChat.getGroupId());
                 edtMessage.setText("");
-
+                publishMessage(msg);
             }
         }));
     }
@@ -101,7 +130,7 @@ public class ChatActivity extends AppCompatActivity {
         URI uri;
         try {
             // Connect to local host
-            uri = new URI("ws://192.168.1.5:8081/websocket");
+            uri = new URI("ws://" + Server.URL+"/websocket");
         }
         catch (URISyntaxException e) {
             e.printStackTrace();
@@ -111,12 +140,18 @@ public class ChatActivity extends AppCompatActivity {
         webSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen() {
-
+                Log.d("socket", "socket open");
             }
 
             @Override
             public void onTextReceived(String message) {
-                messageList.add(g.fromJson(message, Message.class));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getData(groupChat.getGroupId());
+
+                    }
+                });
             }
 
             @Override
@@ -142,12 +177,72 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onCloseReceived() {
 
+                Log.e("socket", "Socket close"
+
+                );
             }
         };
-//        webSocketClient.setConnectTimeout(10000);
-//        webSocketClient.setReadTimeout(60000);
-//        webSocketClient.enableAutomaticReconnection(5000);
+        webSocketClient.setConnectTimeout(10000);
+        webSocketClient.setReadTimeout(60000);
+        webSocketClient.enableAutomaticReconnection(3000);
+
         webSocketClient.connect();
+
+        initPubNub();
+
+    }
+
+    private void initPubNub() {
+        PNConfiguration pnConfiguration = new PNConfiguration();
+        pnConfiguration.setPublishKey("pub-c-aaff6267-c49d-4512-859a-f398baeb822c");
+        pnConfiguration.setSubscribeKey("sub-c-44251ad0-cd2a-48c2-8d91-1b0300135651");
+        pnConfiguration.setSecure(true);
+        pubnub = new PubNub(pnConfiguration);
+        pubnub.addListener(new SubscribeCallback() {
+            @Override
+            public void status(PubNub pub, PNStatus status) {
+            }
+
+            @Override
+            public void message(PubNub pub, final PNMessageResult message) {
+                final String msg = message.getMessage().toString().replace("\"", "");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getData(groupChat.getGroupId());
+                        } catch (Exception e) {
+                            System.out.println("Error");
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void presence(PubNub pub, PNPresenceEventResult presence) {
+            }
+        });
+
+        // Subscribe to the global channel
+        pubnub.subscribe()
+                .channels(Arrays.asList("global_channel"))
+                .execute();
+    }
+
+    public void publishMessage(String animal_sound){
+        // Publish message to the global chanel
+        pubnub.publish()
+                .message(animal_sound)
+                .channel("global_channel")
+                .async(new PNCallback<PNPublishResult>() {
+                    @Override
+                    public void onResponse(PNPublishResult result, PNStatus status) {
+                        if(status.isError()) {
+                            getData(groupChat.getGroupId());
+                        }
+                    }
+                });
     }
 
 

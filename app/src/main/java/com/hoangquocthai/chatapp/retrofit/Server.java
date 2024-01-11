@@ -3,7 +3,8 @@ package com.hoangquocthai.chatapp.retrofit;
 import com.hoangquocthai.chatapp.object.User;
 
 public class Server {
-    public static final String BASE_URL = "http://192.168.1.5:8081";
+    public static final String URL = "192.168.1.5:8081";
+    public static final String BASE_URL = "http://" + URL;
     public static final String prefixUser = "/api/users";
     public static final String prefixLogin = prefixUser + "/login";
     public static final String prefixGetAllUser = prefixUser + "/";

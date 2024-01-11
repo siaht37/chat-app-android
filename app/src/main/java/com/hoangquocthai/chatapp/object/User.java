@@ -6,7 +6,6 @@ public class User {
     private String username;
     private String fullName;
     private String userAvatar;
-    private Date createdAt;
 
     public User() {
     }
@@ -15,13 +14,6 @@ public class User {
         this.username = username;
         this.fullName = fullName;
         this.userAvatar = userAvatar;
-    }
-
-    public User(String username, String fullName, String userAvatar, Date createdAt) {
-        this.username = username;
-        this.fullName = fullName;
-        this.userAvatar = userAvatar;
-        this.createdAt = createdAt;
     }
 
     public String getUsername() {
@@ -48,11 +40,4 @@ public class User {
         this.userAvatar = userAvatar;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
 }

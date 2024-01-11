@@ -1,6 +1,7 @@
 package com.hoangquocthai.chatapp.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hoangquocthai.chatapp.R;
+import com.hoangquocthai.chatapp.dto.MessageDTO;
 import com.hoangquocthai.chatapp.object.Message;
 import com.hoangquocthai.chatapp.retrofit.Server;
 
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    private List<Message> messageList;
+    private List<MessageDTO> messageList;
 
     private Context context;
 
-    public MessageAdapter(Context context, List<Message> messages){
+    public MessageAdapter(Context context, List<MessageDTO> messages){
         this.context = context;
         this.messageList = messages;
     }
@@ -30,18 +32,21 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.reciver_layout,parent,false);
+
         return new MessageAdapter.MyViewHoder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         final MessageAdapter.MyViewHoder myViewHoder = (MessageAdapter.MyViewHoder) holder;
-        Message message = messageList.get(position);
-        myViewHoder.message.setText(message.getContent());
+        MessageDTO message = messageList.get(position);
 
-        if(message.getSender().getUsername().equals(Server.user.getUsername())) {
+        if(message.getUser().getUsername().equals(Server.user.getUsername())){
             myViewHoder.parentMessageItem.setGravity(RelativeLayout.ALIGN_RIGHT);
+        }else{
+            myViewHoder.parentMessageItem.setGravity(RelativeLayout.ALIGN_LEFT);
         }
+        myViewHoder.message.setText(message.getMessage().getContent());
     }
 
     @Override

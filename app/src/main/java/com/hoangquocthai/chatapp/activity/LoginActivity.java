@@ -33,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
 
         apiChat  = RetrofitClient.getInstance(Server.BASE_URL).create(ApiChat.class);
         initializeView();
-        edtPassword.setText("password0");
-        edtUsername.setText("user0");
+        edtPassword.setText("password8");
+        edtUsername.setText("user8");
         handleEvent();
 
     }

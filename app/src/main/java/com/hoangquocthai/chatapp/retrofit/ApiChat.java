@@ -2,6 +2,7 @@ package com.hoangquocthai.chatapp.retrofit;
 
 import com.hoangquocthai.chatapp.dto.GroupChat;
 import com.hoangquocthai.chatapp.dto.GroupChatRequestDto;
+import com.hoangquocthai.chatapp.dto.MessageDTO;
 import com.hoangquocthai.chatapp.dto.UserDTO;
 import com.hoangquocthai.chatapp.object.Message;
 import com.hoangquocthai.chatapp.object.User;
@@ -31,11 +32,11 @@ public interface ApiChat {
 
     @POST(Server.prefixGetAllMessage)
     @FormUrlEncoded
-    Observable<List<Message>> getAllMessageByGroup(@Field("groupId") Long groupId);
+    Observable<List<MessageDTO>> getAllMessageByGroup(@Field("groupId") Long groupId);
 
     @POST(Server.prefixGetGroupById)
     @FormUrlEncoded
-    Observable<GroupChat> getGroupById(@Field("id") Long id);
+    Observable<GroupChat> getGroupById(@Field("groupId") Long id);
 
 
 //
